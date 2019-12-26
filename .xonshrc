@@ -1,0 +1,145 @@
+$LANG = 'C.UTF-8'
+$PROMPT = "{WHITE}{cwd}[{GREEN}{curr_branch}{WHITE}] $ "
+$INDENT = "    "
+$XONSH_AUTOPAIR = True
+$AUTO_CD = True
+# $XONSH_SHOW_TRACEBACK = True
+$COLOR_RESULTS = True
+$COMPLETIONS_BRACKETS = True
+$XONSH_SHOW_TRACEBACK = True
+$PATHEXT = [".EXE"]
+
+aliases["q"] = "quit"
+aliases["py"] = "python"
+aliases["emacs"] = "vim"
+aliases["sl"] = "wsl sl"
+aliases[":q"] = "quit"
+
+
+def warp(args):
+    import os
+    os.chdir("../" + args[0])
+
+
+aliases["warp"] = warp
+aliases["wp"] = warp
+
+import tweepy
+import sys
+import subprocess
+from dotenv import load_dotenv
+dotenv_path = join(dirname(__file__), '.env')
+load_dotenv(dotenv_path)
+
+
+def tweet(args):
+
+    CONSUMER_KEY = os.environ.get("CONSUMER_KEY")
+    CONSUMER_SECRET = os.environ.get("CONSUMER_SECRET")
+    auth = tweepy.OAuthHandler(CONSUMER_KEY, CONSUMER_SECRET)
+
+    ACCESS_TOKEN = os.environ.get("ACCESS_TOKEN")
+    ACCESS_SECRET = os.environ.get("ACCESS_SECRET")
+    auth.set_access_token(ACCESS_TOKEN, ACCESS_SECRET)
+
+    api = tweepy.API(auth)
+    if len(args) == 0:
+        texts = []
+        while True:
+            text = input(">")
+            if text in {"q", "quit", "exit"}:
+                sys.exit()
+            if text == "":
+                break
+            else:
+                texts.append(text)
+        tweet = "\n".join(texts)
+        if len(tweet) > 140:
+            tweet = tweet[:140]
+        api.update_status(status=tweet)
+    elif args[0] == "repo":
+        repo_url = subprocess.check_output("git remote -v".split()).split()[1][:-4].decode("utf-8")
+        if "lefixea-inc" in repo_url:
+            print("It's Secret!!!")
+            sys.exit()
+        tweet = """
+        I'm workig on {0}
+        """.format(repo_url)
+        api.update_status(tweet)
+
+
+aliases["tw"] = tweet
+
+import os
+from colorama import Fore
+
+
+def lss():
+    files_path_list = []
+    for path in os.listdir():
+        if os.path.isfile(path):
+            files_path_list.append(path)
+        else:
+            print(Fore.RED + path + "/")
+    for path in files_path_list:
+        print(Fore.GREEN + path)
+
+
+aliases["ls"] = lss
+
+
+def execute_file(args):
+    from subprocess import run as cmrun
+    from os import remove
+
+    def run_c(file_name: str) -> None:
+        cmrun("gcc {0}".format(file_name).split())
+        cmrun("a".split())
+        remove("a.exe")
+        return
+
+    def run_cpp(file_name: str) -> None:
+        cmrun("gcc {0}".format(file_name).split())
+        cmrun("a".split())
+        remove("a.exe")
+        return
+
+    def run_python(file_name: str) -> None:
+        cmrun("python {0}".format(file_name).split())
+        return
+
+    def run_go(file_name: str) -> None:
+        cmrun("go run {0}".format(file_name).split())
+        return
+
+    def run_fortran(file_name: str) -> None:
+        cmrun("gfortran {0}".format(file_name).split())
+        cmrun("a".split())
+        remove("a.exe")
+        return
+
+    ex_func_dict = {"c": run_c,
+                    "cpp": run_cpp,
+                    "py": run_python,
+                    "go": run_go,
+                    "f90": run_fortran,
+                    "f95": run_fortran}
+
+    """
+    以下main
+    """
+    if len(args) == 0:
+        print("""
+        It is command of run script.
+        you can execute...
+        ----------
+        .{0}
+        ----------
+        """.format("\n        .".join(ex_func_dict.keys())))
+    else:
+        input_file = args[0]
+        ex = input_file.split(".")[-1]
+        ex_func_dict[ex](input_file)
+
+
+aliases["run"] = execute_file
