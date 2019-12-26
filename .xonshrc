@@ -73,7 +73,6 @@ def tweet(args):
 
 aliases["tw"] = tweet
 
-import os
 from colorama import Fore
 
 
