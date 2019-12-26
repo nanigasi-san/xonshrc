@@ -59,6 +59,7 @@ def tweet(args):
         if len(tweet) > 140:
             tweet = tweet[:140]
         api.update_status(status=tweet)
+
     elif args[0] == "repo":
         repo_url = subprocess.check_output("git remote -v".split()).split()[1][:-4].decode("utf-8")
         if "nanigasi-san" not in repo_url:
@@ -131,13 +132,18 @@ def execute_file(args):
     以下main
     """
     if len(args) == 0:
+        print("""{0}[Error] No input file.
+{1}Usage: run [input_file_path]
+{2}If you want to see more help, please use `-h`.""".format(Fore.RED, Fore.YELLOW, Fore.WHITE))
+    elif args[0] == "-h":
         print("""
-        It is command of run script.
-        you can execute...
-        ----------
-        .{0}
-        ----------
-        """.format("\n        .".join(ex_func_dict.keys())))
+It is command of run script.
+{0}Usage: run [file_name]
+Example1: run hoge.cpp
+Example2: run huga.go
+{1}you can execute...
+.{2}
+""".format(Fore.YELLOW, Fore.WHITE, "\n.".join(ex_func_dict.keys())))
     else:
         input_file = args[0]
         ex = input_file.split(".")[-1]
