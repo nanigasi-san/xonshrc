@@ -150,3 +150,11 @@ Example2: run huga.go
 
 
 aliases["run"] = execute_file
+
+
+def catt(args):
+    with open(args[0]) as f:
+        print(f.read(), end="")
+
+
+aliases["cat"] = catt
