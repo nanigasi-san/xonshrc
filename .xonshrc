@@ -61,8 +61,8 @@ def tweet(args):
         api.update_status(status=tweet)
     elif args[0] == "repo":
         repo_url = subprocess.check_output("git remote -v".split()).split()[1][:-4].decode("utf-8")
-        if "lefixea-inc" in repo_url:
-            print("It's Secret!!!")
+        if "nanigasi-san" not in repo_url:
+            print("It's not only yours !!!!")
             sys.exit()
         tweet = """
         I'm workig on {0}
