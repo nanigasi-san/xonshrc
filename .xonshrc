@@ -15,6 +15,9 @@ aliases["emacs"] = "vim"
 aliases["sl"] = "wsl sl"
 aliases[":q"] = "quit"
 
+import warnings
+warnings.simplefilter("ignore")
+
 
 def warp(args):
     import os
@@ -158,3 +161,21 @@ def catt(args):
 
 
 aliases["cat"] = catt
+
+
+def get_rating(user_name):
+    from requests import get
+    URL = "https://atcoder.jp/users/"
+    r = get(URL + user_name).text
+    from bs4 import BeautifulSoup
+    soup = BeautifulSoup(r, "lxml")
+    a = soup.find_all("td")
+    return [c for c in [b.find_all("span") for b in a] if c != []][0][0].string
+
+
+def print_ratings(args):
+    for user_name in args:
+        print("{0}: {1}".format(user_name, get_rating(user_name)))
+
+
+aliases["rate"] = print_ratings
